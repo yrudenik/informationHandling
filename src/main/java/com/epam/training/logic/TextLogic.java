@@ -11,6 +11,7 @@ import com.epam.training.parser.TextBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class TextLogic {
 
@@ -55,13 +56,13 @@ public class TextLogic {
         throw new CustomComponentException("Illegal text component(Parse to String)");
     }
 
-    public Composite calculateExpressionsInText(Composite text) throws CustomComponentException {
+    public Composite calculateExpressionsInText(Composite text, Map<String, Double> parameters) throws CustomComponentException {
         List<Component> calculatedTextComponents = new ArrayList<>();
         List<Component> textComponents = text.getChildren();
         for (Component component : textComponents) {
             Component calculatedComponent;
             try {
-                calculatedComponent = calculateExpressionsInComponent(component);
+                calculatedComponent = calculateExpressionsInComponent(component, parameters);
             } catch (CustomComponentException e) {
                 throw new CustomComponentException(e);
             }
@@ -70,13 +71,13 @@ public class TextLogic {
         return new Composite(calculatedTextComponents);
     }
 
-    private Component calculateExpressionsInComponent(Component component) throws CustomComponentException {
+    private Component calculateExpressionsInComponent(Component component, Map<String, Double> parameters) throws CustomComponentException {
         if (component.getClass() == Composite.class) {
             Composite composite = (Composite) component;
             List<Component> calculatedComponents = new ArrayList<>();
             List<Component> components = composite.getChildren();
             for (Component componentIterator : components) {
-                Component calculatedComponentIterator = calculateExpressionsInComponent(componentIterator);
+                Component calculatedComponentIterator = calculateExpressionsInComponent(componentIterator, parameters);
                 calculatedComponents.add(calculatedComponentIterator);
             }
             return new Composite(calculatedComponents);
@@ -85,8 +86,8 @@ public class TextLogic {
             Lexeme lexeme = (Lexeme) component;
             String lexemeValue = lexeme.getValue();
             String calculatedValue;
-            if (lexeme.getLexemeType() == LexemeType.PHRASE) {
-                calculatedValue = Integer.toString(expressionOperation.calculate(lexemeValue));
+            if (lexeme.getLexemeType() == LexemeType.EXPRESSION) {
+                calculatedValue = Double.toString(expressionOperation.calculate(lexemeValue, parameters));
             } else {
                 calculatedValue = lexemeValue;
             }
@@ -100,7 +101,7 @@ public class TextLogic {
         for (Component component : text.getChildren()) {
             paragraphs.add((Composite) component);
         }
-        paragraphs.sort(new ChildComponentsComparator());
+        paragraphs.sort(new ComponentsComparator());
         return new Composite(paragraphs);
     }
 }

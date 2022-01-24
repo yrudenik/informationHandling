@@ -25,5 +25,4 @@ public class TextReader {
         }
         return stringBuilder.toString().trim();
     }
-
 }

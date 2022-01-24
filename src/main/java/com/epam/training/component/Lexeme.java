@@ -1,8 +1,7 @@
 package com.epam.training.component;
 
-import com.epam.training.exception.CustomComponentException;
-
 import java.util.List;
+import java.util.Objects;
 
 public class Lexeme implements Component {
 
@@ -19,8 +18,8 @@ public class Lexeme implements Component {
         return new Lexeme(value, LexemeType.WORD);
     }
 
-    public static Lexeme phrase(String value){
-        return new Lexeme(value, LexemeType.PHRASE);
+    public static Lexeme expression(String value){
+        return new Lexeme(value, LexemeType.EXPRESSION);
     }
 
     public String getValue() {
@@ -31,7 +30,6 @@ public class Lexeme implements Component {
         return lexemeType;
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -41,7 +39,7 @@ public class Lexeme implements Component {
             return false;
         }
         Lexeme lexeme = (Lexeme) o;
-        if (value != null ? !value.equals(lexeme.value) : lexeme.value != null) {
+        if (!Objects.equals(value, lexeme.value)) {
             return false;
         }
         return lexemeType == lexeme.lexemeType;
@@ -56,12 +54,8 @@ public class Lexeme implements Component {
 
     @Override
     public String toString() {
-        return "Lexeme{" +
-                "value='" + value + '\'' +
-                ", lexemeType=" + lexemeType +
-                '}';
+        return "Lexeme{" + "value='" + value + '\'' + ", lexemeType=" + lexemeType + '}';
     }
-
 
     @Override
     public List<Component> getComponents() {

@@ -1,8 +1,8 @@
 package com.epam.training.calculation;
 
-public class SumOperation implements Operation {
+public class SumInterpreter implements Interpreter {
     @Override
-    public void operate(Context context) {
+    public void interpret(Context context) {
         context.push(context.pop() + context.pop());
     }
 }

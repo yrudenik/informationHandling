@@ -11,7 +11,4 @@ public interface Component {
     void remove(Component textComponent);
 
     int size();
-
-
-
 }

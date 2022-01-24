@@ -9,12 +9,12 @@ import java.util.List;
 
 public class SentenceLogic {
 
-    public Composite sortWordsByTargetCharacterNumber(Composite sentence, char targetCharacter) {
+    public Composite sortCharCount(Composite sentence, char givenChar) {
         List<Lexeme> lexemes = new ArrayList<>();
         for (Component component : sentence.getChildren()){
             lexemes.add((Lexeme) component);
         }
-        lexemes.sort(new TargetCharacterNumberComparator(targetCharacter));
+        lexemes.sort(new CharCounterComparator(givenChar));
         return new Composite(lexemes);
     }
 }

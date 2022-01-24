@@ -1,38 +1,32 @@
 package com.epam.training.parser;
 
-import com.epam.training.component.Component;
 import com.epam.training.component.Composite;
 import com.epam.training.component.Lexeme;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.util.Arrays;
+
 public class TextParserTest {
 
-    private static final String VALID_TEXT = "First paragraph! Still first.\nSecond Paragraph.";
-    private static final String FIRST_PARAGRAPH = "First paragraph! Still first.";
-    private static final String SECOND_PARAGRAPH = "Second Paragraph.";
-    private static final Component FIRST_COMPONENT = Lexeme.word(FIRST_PARAGRAPH);
-    private static final Component SECOND_COMPONENT = Lexeme.word(SECOND_PARAGRAPH);
+    private static final String FULL_TEXT = "Walk on, walk on. With hope in your heart!\nAnd you'll never walk alone!";
+    private static final String FIRST_PARAGRAPH = "Walk on, walk on. With hope in your heart!";
+    private static final String SECOND_PARAGRAPH = "And you'll never walk alone!";
+    private static final Composite EXPECTED_FIRST_PARAGRAPH = new Composite(Arrays.asList(Lexeme.expression("Walk on, walk on."), Lexeme.expression("With hope in your heart!")));
+    private static final Composite EXPECTED_SECOND_PARAGRAPH = new Composite(Arrays.asList(Lexeme.expression("Second Paragraph."), Lexeme.expression("Second yet.")));
+    private static final Composite EXPECTED_TEXT = new Composite(Arrays.asList(EXPECTED_FIRST_PARAGRAPH, EXPECTED_SECOND_PARAGRAPH));
 
     @Test
-    public void testParseShouldReturnCorrectComponentWhenTextIsValid() {
+    public void testParseShouldReturnCorrectTextWhenTextIsParagraphComposite() {
         //given
         ParagraphParser paragraphParser = Mockito.mock(ParagraphParser.class);
-        Mockito.when(paragraphParser.parse(FIRST_PARAGRAPH)).thenReturn((Composite) FIRST_COMPONENT);
-        Mockito.when(paragraphParser.parse(SECOND_PARAGRAPH)).thenReturn((Composite) SECOND_COMPONENT);
+        Mockito.when(paragraphParser.parse(FIRST_PARAGRAPH)).thenReturn(EXPECTED_FIRST_PARAGRAPH);
+        Mockito.when(paragraphParser.parse(SECOND_PARAGRAPH)).thenReturn(EXPECTED_SECOND_PARAGRAPH);
         TextParser textParser = new TextParser(paragraphParser);
-
         //when
-        Component actual = textParser.parse(VALID_TEXT);
-
+        Composite actual = textParser.parse(FULL_TEXT);
         //then
-        Component expected = new Composite();
-        expected.add(FIRST_COMPONENT);
-        expected.add(SECOND_COMPONENT);
-
-        Assert.assertEquals(expected, actual);
+        Assert.assertEquals(EXPECTED_TEXT, actual);
     }
-
-
 }

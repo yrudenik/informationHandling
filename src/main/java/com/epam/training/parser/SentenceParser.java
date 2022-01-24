@@ -22,7 +22,7 @@ public class SentenceParser extends AbstractParser{
         String[] lexemes = text.split(LEXEME_TYPES_DELIMITER);
         for (String lexeme : lexemes){
             if (lexeme.contains("[")){
-                composite.add(Lexeme.phrase(lexeme));
+                composite.add(Lexeme.expression(lexeme));
             } else {
                 parseWordsToComposites(lexeme, composite);
             }

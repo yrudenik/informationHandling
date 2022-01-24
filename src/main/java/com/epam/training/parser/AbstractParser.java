@@ -21,12 +21,11 @@ public abstract class AbstractParser implements Parser {
 
     public Composite templateParse(String text, String delimiterRegex){
         Composite resultComposite = new Composite();
-        String[] textWithDelimeter = text.split(delimiterRegex);
-        for (String textElement : textWithDelimeter){
+        String[] textWithDelimiter = text.split(delimiterRegex);
+        for (String textElement : textWithDelimiter){
             Component textElementComposite = getSuccessor().parse(textElement);
             resultComposite.add(textElementComposite);
         }
         return resultComposite;
     }
-
 }

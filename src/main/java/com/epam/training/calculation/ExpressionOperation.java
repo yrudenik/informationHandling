@@ -4,55 +4,56 @@ import com.epam.training.exception.CustomComponentException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class ExpressionOperation {
+    private static final String EXPRESSION_SEPARATOR = "\\p{Blank}+";
 
-    private static final String LEXEME_DELIMITER = " ";
-
-    private final List<Operation> operationList = new ArrayList<>();
-
-    public Integer calculate(String phrase) throws CustomComponentException {
-        //operationList.clear();
-        for (String lexeme : phrase.split(LEXEME_DELIMITER)) {
-            if (lexeme.isEmpty() || lexeme.length() > 1 && addIntegerToPhrase(lexeme)) {
-                continue;
-            }
-            switch (lexeme.charAt(0)) {
-                case '+':
-                    operationList.add(new SumOperation());
-                    break;
-                case '-':
-                    operationList.add(new DeductOperation());
-                    break;
-                case '*':
-                    operationList.add(new MultiplyOperation());
-                    break;
-                case '/':
-                    operationList.add(new DivideOperation());
-                    break;
-                default:
-                    addIntegerToPhrase(lexeme);
-            }
-        }
-        return finishCalculation();
-    }
-
-    private Integer finishCalculation() throws CustomComponentException {
+    public double calculate(String expression, Map<String, Double> parameters) throws CustomComponentException {
+        List<Interpreter> expressions = parse(expression, parameters);
         Context context = new Context();
-        for (Operation operation : operationList){
-            operation.operate(context);
+        for (Interpreter terminal : expressions) {
+            terminal.interpret(context);
         }
         return context.pop();
     }
 
-    private boolean addIntegerToPhrase(String lexeme) {
-        Scanner scanner = new Scanner(lexeme);
-        if (scanner.hasNext()) {
-            operationList.add(new AnotherOperation(scanner.nextInt()));
-        } else {
-            return false;
+    private List<Interpreter> parse(String expression, Map<String, Double> parameters) throws CustomComponentException {
+        List<Interpreter> expressions = new ArrayList<>();
+        String expressionValue = expression.replaceAll("[\\[\\]]", "");
+        for (String part : expressionValue.split(EXPRESSION_SEPARATOR)) {
+            if (!part.isEmpty()) {
+                switch (part) {
+                    case "+":
+                        expressions.add(new SumInterpreter());
+                        break;
+                    case "-":
+                        expressions.add(new DeductInterpreter());
+                        break;
+                    case "*":
+                        expressions.add(new MultiplyInterpreter());
+                        break;
+                    case "/":
+                        expressions.add(new DivideInterpreter());
+                        break;
+                    default:
+                        Scanner scanner = new Scanner(part);
+                        if (scanner.hasNextDouble()) {
+                            Double number = scanner.nextDouble();
+                            expressions.add(new SpecificInterpreter(number));
+                        } else {
+                            String key = scanner.next();
+                            if (parameters.containsKey(key)) {
+                                Double number = parameters.get(key);
+                                expressions.add(new SpecificInterpreter(number));
+                            } else {
+                                throw new CustomComponentException("There is unknown variable in expression: " + key);
+                            }
+                        }
+                }
+            }
         }
-        return true;
+        return expressions;
     }
 }

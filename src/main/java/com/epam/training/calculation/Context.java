@@ -5,13 +5,13 @@ import java.util.Deque;
 
 public class Context {
 
-    private final Deque<Integer> stack = new ArrayDeque<>();
+    private final Deque<Double> arrayDeque = new ArrayDeque<>();
 
-    public void push(Integer integer) {
-        stack.push(integer);
+    public void push(Double value) {
+        arrayDeque.push(value);
     }
 
-    public Integer pop() {
-        return stack.pop();
+    public Double pop() {
+        return arrayDeque.pop();
     }
 }
