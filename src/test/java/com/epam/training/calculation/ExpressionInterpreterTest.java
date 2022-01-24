@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class ExpressionInterpreterTest {
 
-    private static final ExpressionOperation EXPRESSION_OPERATION = new ExpressionOperation();
+    private static final ExpressionInterpreter EXPRESSION_OPERATION = new ExpressionInterpreter();
     private static final Map<String, Double> parameters = new HashMap<String, Double>() {
         {
             put("x", 3.0);

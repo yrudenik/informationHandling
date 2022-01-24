@@ -1,6 +1,6 @@
 package com.epam.training.logic;
 
-import com.epam.training.calculation.ExpressionOperation;
+import com.epam.training.calculation.ExpressionInterpreter;
 import com.epam.training.component.Component;
 import com.epam.training.component.Composite;
 import com.epam.training.component.Lexeme;
@@ -8,6 +8,8 @@ import com.epam.training.component.LexemeType;
 import com.epam.training.exception.CustomComponentException;
 import com.epam.training.parser.Parser;
 import com.epam.training.parser.TextBuilder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,17 +17,18 @@ import java.util.Map;
 
 public class TextLogic {
 
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final String PARAGRAPHS_DELIMITER = "\n";
     private static final String LEXEMES_AND_SENTENCES_DELIMITER = " ";
 
-    private final ExpressionOperation expressionOperation;
+    private final ExpressionInterpreter expressionInterpreter;
 
     public TextLogic() {
-        expressionOperation = new ExpressionOperation();
+        expressionInterpreter = new ExpressionInterpreter();
     }
 
-    public TextLogic(ExpressionOperation expressionOperation) {
-        this.expressionOperation = expressionOperation;
+    public TextLogic(ExpressionInterpreter expressionInterpreter) {
+        this.expressionInterpreter = expressionInterpreter;
     }
 
     public Composite parse(String text) {
@@ -34,13 +37,17 @@ public class TextLogic {
         return parser.parse(text);
     }
 
-    public String parsedTextToString(Component text, String delimiterComponent) throws CustomComponentException {
+    public String parsedTextToString(Composite text) throws CustomComponentException {
+        LOGGER.info("Start parsing text to String");
+        return parsedComponentToString(text, PARAGRAPHS_DELIMITER);
+    }
+    public String parsedComponentToString(Component text, String delimiterComponent) throws CustomComponentException {
         StringBuilder resultString = new StringBuilder();
         if (text.getClass() == Composite.class) {
             Composite compositeText = (Composite) text;
             List<Component> componentsList = compositeText.getChildren();
             for (Component component : componentsList) {
-                resultString.append(parsedTextToString(component, LEXEMES_AND_SENTENCES_DELIMITER));
+                resultString.append(parsedComponentToString(component, LEXEMES_AND_SENTENCES_DELIMITER));
                 if (componentsList.indexOf(component) != componentsList.size() - 1) {
                     resultString.append(delimiterComponent);
                 }
@@ -72,6 +79,7 @@ public class TextLogic {
     }
 
     private Component calculateExpressionsInComponent(Component component, Map<String, Double> parameters) throws CustomComponentException {
+        LOGGER.info("Start calculating expressions in component");
         if (component.getClass() == Composite.class) {
             Composite composite = (Composite) component;
             List<Component> calculatedComponents = new ArrayList<>();
@@ -87,7 +95,7 @@ public class TextLogic {
             String lexemeValue = lexeme.getValue();
             String calculatedValue;
             if (lexeme.getLexemeType() == LexemeType.EXPRESSION) {
-                calculatedValue = Double.toString(expressionOperation.calculate(lexemeValue, parameters));
+                calculatedValue = Double.toString(expressionInterpreter.calculate(lexemeValue, parameters));
             } else {
                 calculatedValue = lexemeValue;
             }
@@ -97,6 +105,7 @@ public class TextLogic {
     }
 
     public Composite sortParagraphsBySentenceNumber(Composite text) {
+        LOGGER.info("Start sorting paragraphs by sentence number");
         List<Composite> paragraphs = new ArrayList<>();
         for (Component component : text.getChildren()) {
             paragraphs.add((Composite) component);

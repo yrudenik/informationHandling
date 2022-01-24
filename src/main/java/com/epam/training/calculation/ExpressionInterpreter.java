@@ -1,16 +1,20 @@
 package com.epam.training.calculation;
 
 import com.epam.training.exception.CustomComponentException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-public class ExpressionOperation {
+public class ExpressionInterpreter {
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final String EXPRESSION_SEPARATOR = "\\p{Blank}+";
 
     public double calculate(String expression, Map<String, Double> parameters) throws CustomComponentException {
+        LOGGER.info("Start calculating. Expression: " + expression + ", parameters: " + parameters);
         List<Interpreter> expressions = parse(expression, parameters);
         Context context = new Context();
         for (Interpreter terminal : expressions) {
@@ -20,6 +24,7 @@ public class ExpressionOperation {
     }
 
     private List<Interpreter> parse(String expression, Map<String, Double> parameters) throws CustomComponentException {
+        LOGGER.info("Start parsing. Expression: " + expression + ", parameters: " + parameters);
         List<Interpreter> expressions = new ArrayList<>();
         String expressionValue = expression.replaceAll("[\\[\\]]", "");
         for (String part : expressionValue.split(EXPRESSION_SEPARATOR)) {

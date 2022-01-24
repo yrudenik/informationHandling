@@ -10,12 +10,11 @@ import java.util.Arrays;
 
 public class TextParserTest {
 
-    private static final String FULL_TEXT = "Walk on, walk on. With hope in your heart!\nAnd you'll never walk alone!";
+    private static final String FULL_TEXT = "Walk on, walk on. With hope in your heart!\nAnd you'll never walk alone! You'll never walk alone!";
     private static final String FIRST_PARAGRAPH = "Walk on, walk on. With hope in your heart!";
-    private static final String SECOND_PARAGRAPH = "And you'll never walk alone!";
+    private static final String SECOND_PARAGRAPH = "And you'll never walk alone! You'll never walk alone!";
     private static final Composite EXPECTED_FIRST_PARAGRAPH = new Composite(Arrays.asList(Lexeme.expression("Walk on, walk on."), Lexeme.expression("With hope in your heart!")));
-    private static final Composite EXPECTED_SECOND_PARAGRAPH = new Composite(Arrays.asList(Lexeme.expression("Second Paragraph."), Lexeme.expression("Second yet.")));
-    private static final Composite EXPECTED_TEXT = new Composite(Arrays.asList(EXPECTED_FIRST_PARAGRAPH, EXPECTED_SECOND_PARAGRAPH));
+    private static final Composite EXPECTED_SECOND_PARAGRAPH = new Composite(Arrays.asList(Lexeme.expression("And you'll never walk alone!"), Lexeme.expression("You'll never walk alone!")));
 
     @Test
     public void testParseShouldReturnCorrectTextWhenTextIsParagraphComposite() {
@@ -24,9 +23,12 @@ public class TextParserTest {
         Mockito.when(paragraphParser.parse(FIRST_PARAGRAPH)).thenReturn(EXPECTED_FIRST_PARAGRAPH);
         Mockito.when(paragraphParser.parse(SECOND_PARAGRAPH)).thenReturn(EXPECTED_SECOND_PARAGRAPH);
         TextParser textParser = new TextParser(paragraphParser);
+        Composite expected = new Composite();
+        expected.add(EXPECTED_FIRST_PARAGRAPH);
+        expected.add(EXPECTED_SECOND_PARAGRAPH);
         //when
         Composite actual = textParser.parse(FULL_TEXT);
         //then
-        Assert.assertEquals(EXPECTED_TEXT, actual);
+        Assert.assertEquals(expected, actual);
     }
 }
